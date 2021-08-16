@@ -82,9 +82,10 @@ range_x <- unique(db_YX$date)
 range_x <- sort(range_x)
 range_x <- c(first(range_x),last(range_x))
 
-range_z <- unique(DT$date.filed)
+range_z <- unique(DT$filing.year)
 range_z <- sort(range_z)
 range_z <- c(first(range_z),last(range_z))
+range_z <- as.Date(paste0("12/31/",range_z), "%m/%d/%Y")
 
 range_all <- c(
   last(sort(c(range_x[1], range_z[1]))),
