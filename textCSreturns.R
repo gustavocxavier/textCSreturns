@@ -43,11 +43,11 @@ sccm_a <- sccm_a %>%
 db_YX <- db_YX %>% left_join(sccm_a) %>% na.omit
 rm(sccm_a)
 
-
-### Include return in db_YX and save as db_YX2
-crsp_m <- readRDS(paste0(myPath,"1a_cleaned_crsp_m2.rds"))
-crsp_m <- crsp_m %>% select(permno, date, return=retadj)
-db_YX2 <- db_YX %>% left_join(crsp_m, by = c("permno", "date"))
+##
+## Include return in db_YX and save as db_YX2
+crsp_m <- readRDS(paste0(myPath,"1a_cleaned_crsp_m2.rds")) #
+crsp_m <- crsp_m %>% select(permno, date, return=retadj)   #
+db_YX2 <- db_YX %>% left_join(crsp_m, by = c("permno", "date")) #
 
 ### Load word data -------------------------------------------------------------
 DT <- fread(file = "~/DT_AllSample.csv",
