@@ -17,28 +17,37 @@ library(tidytext)
 library(lubridate)
 library(purrr)
 
+## Set path --------------------------------------------------------------------
+myPath <- "C:/Dropbox/Code/investmentPlan/GitHub/EIGtext/2_pipeline/"
+
 ## Set Y and X -----------------------------------------------------------------
 ## Load EIG benchmark measure predicted as Hou, Moe, Xue, and Zhang (2021) (hereafter HMXZ)
 
-hmxz <- readRDS("C:/Dropbox/Code/investmentPlan/GitHub/EIGtext/2_pipeline/4a_hmxz.rds")
+hmxz <- readRDS(paste0(myPath,"4a_hmxz.rds"))
 db_YX <- hmxz %>% select(permno:fiscaldate, Y = d1_ia, cop, q, dROE, me, Y_hat = EIG)
 rm(hmxz)
 
 ## Include fiscal year in db_YX
-ccm_a <- readRDS("C:/Dropbox/Code/investmentPlan/GitHub/EIGtext/2_pipeline/1b_ccm_a.rds")
+ccm_a <- readRDS(paste0(myPath,"1b_ccm_a.rds"))
 ccm_a <- ccm_a %>% select(gvkey, permno, fiscaldate = datadate, fyear)
 db_YX <- db_YX %>% left_join(ccm_a)
 rm(ccm_a)
 
 
 ## Include cik in db_YX
-sccm_a <- readRDS("C:/Dropbox/Code/investmentPlan/GitHub/EIGtext/2_pipeline/3a_sccm_a.rds")
+sccm_a <- readRDS(paste0(myPath,"3a_sccm_a.rds"))
 sccm_a <- sccm_a %>%
   mutate(fyear = filing.year - 1) %>%
   ungroup %>% 
   select(permno, gvkey, fyear, cik)
 db_YX <- db_YX %>% left_join(sccm_a) %>% na.omit
 rm(sccm_a)
+
+
+### Include return in db_YX and save as db_YX2
+crsp_m <- readRDS(paste0(myPath,"1a_cleaned_crsp_m2.rds"))
+crsp_m <- crsp_m %>% select(permno, date, return=retadj)
+db_YX2 <- db_YX %>% left_join(crsp_m, by = c("permno", "date"))
 
 ### Load word data -------------------------------------------------------------
 DT <- fread(file = "~/DT_AllSample.csv",
@@ -130,7 +139,7 @@ range_all <- paste0(format(range_all, format="%Y-%m"),"-", days_in_month(range_a
 
 # firms <- db_YX[date=="1999-03-31", .(cik, gvkey, permno, date)]
 
-hmxz <- readRDS("C:/Dropbox/Code/investmentPlan/GitHub/EIGtext/2_pipeline/4a_hmxz.rds")
+hmxz <- readRDS(paste0(myPath,"4a_hmxz.rds"))
 recursive_fun <- function() {
   for (cs_month in range_all) {
     print(cs_month)
@@ -486,7 +495,7 @@ NW(1, encompass_test$estimate) # null hypothesis theta != 1
 ## Economic Value --------------------------------------------------------------
 # DT %>% group_by(date) %>% count %>% filter(year(date)>1975) %>% arrange(n)
 
-crsp_m <- readRDS("C:/Dropbox/Code/investmentPlan/GitHub/EIGtext/2_pipeline/7b_crsp_m.rds")
+crsp_m <- readRDS(paste0(myPath,"7b_crsp_m.rds"))
 crsp_m <- crsp_m %>% select(permno, date, retadj, me)
 
 
