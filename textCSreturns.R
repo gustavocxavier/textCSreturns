@@ -76,16 +76,27 @@ rm(nums)
 # DT <- DT[n_MDA_with_this_term>=10,]
 # DT[, n_MDA_with_this_term := NULL]
 
+## Include date.filed in DT
+sec_index <- readRDS("data/sec_index.rds")
+sec_index <- select(sec_index, cik, date.filed, filing.year=year)
+DT
+# left_join(x, y, by = "Id")
+# y[x, on = "Id"]
+setDT(sec_index)
+DT <- sec_index[DT, on = c("cik", "filing.year")]
+setkey(DT, date.filed, year_gvkey)
+# TODO: Resolver date.filed que ficou NA
+# unique(DT[is.na(date.filed)]$filing.year)
+
 ## Set date_range --------------------------------------------------------------
 
 range_x <- unique(db_YX$date)
 range_x <- sort(range_x)
 range_x <- c(first(range_x),last(range_x))
 
-range_z <- unique(DT$filing.year)
+range_z <- unique(DT$date.filed)
 range_z <- sort(range_z)
 range_z <- c(first(range_z),last(range_z))
-range_z <- as.Date(paste0("12/31/",range_z), "%m/%d/%Y")
 
 range_all <- c(
   last(sort(c(range_x[1], range_z[1]))),
@@ -114,17 +125,6 @@ range_all <- paste0(format(range_all, format="%Y-%m"),"-", days_in_month(range_a
 #   Z <- sparsematrix (db_Zt)
 #   Zt    <- Z[db_Zt$t=="t",]
 #   Zt_12 <- Z[db_Zt$t=="t-12",]
-
-sec_index <- readRDS("~/sec_index.rds")
-sec_index <- select(sec_index, cik, date.filed, filing.year=year)
-DT
-# left_join(x, y, by = "Id")
-# y[x, on = "Id"]
-setDT(sec_index)
-DT <- sec_index[DT, on = c("cik", "filing.year")]
-setkey(DT, date.filed, year_gvkey)
-# TODO: Resolver date.filed que ficou NA
-# unique(DT[is.na(date.filed)]$filing.year)
 
 # Organize Z
 
