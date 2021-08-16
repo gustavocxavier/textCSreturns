@@ -18,18 +18,20 @@ library(lubridate)
 library(purrr)
 
 ## Set Y and X -----------------------------------------------------------------
+## Load EIG benchmark measure predicted as Hou, Moe, Xue, and Zhang (2021) (hereafter HMXZ)
+
 hmxz <- readRDS("C:/Dropbox/Code/investmentPlan/GitHub/EIGtext/2_pipeline/4a_hmxz.rds")
 db_YX <- hmxz %>% select(permno:fiscaldate, Y = d1_ia, cop, q, dROE, me, Y_hat = EIG)
 rm(hmxz)
 
+## Include fiscal year in db_YX
 ccm_a <- readRDS("C:/Dropbox/Code/investmentPlan/GitHub/EIGtext/2_pipeline/1b_ccm_a.rds")
 ccm_a <- ccm_a %>% select(gvkey, permno, fiscaldate = datadate, fyear)
 db_YX <- db_YX %>% left_join(ccm_a)
 rm(ccm_a)
 
 
-db_YX
-## cik to db_YX
+## Include cik in db_YX
 sccm_a <- readRDS("C:/Dropbox/Code/investmentPlan/GitHub/EIGtext/2_pipeline/3a_sccm_a.rds")
 sccm_a <- sccm_a %>%
   mutate(fyear = filing.year - 1) %>%
