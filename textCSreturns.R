@@ -1,7 +1,15 @@
-## O codigo abaixo serve para prever o crescimento do investimento.
-## A ser adaptado para previsao de retornos
+## Monthly Text-based Forecast -------------------------------------------------
 
-## Monthly Text-based Forecast
+## The code below predicts the expected investment growth (EIG) of
+## Hou, Moe, Xue, and Zhang (2021), which is the change in investment-to-assets.
+##
+## In other words, it is :
+##   
+##   [(A_{FY+1} - A_{FY}) / A_{FY}] - [(A_{FY} - A_{FY-1}) / A_{FY-1}] - ,
+## 
+## where A_{FY} is the total assets of the firm in the current fiscal year.
+
+## Load library ----------------------------------------------------------------
 library(dplyr)
 library(data.table)
 library(glmnet)
